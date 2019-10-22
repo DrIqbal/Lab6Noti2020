@@ -12,9 +12,7 @@ import android.graphics.Color;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
-
 
 public class AlarmNotificationService extends IntentService {
 
@@ -38,37 +36,36 @@ public class AlarmNotificationService extends IntentService {
     //handle notification
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void sendNotification(String msg) {
-        alarmNotificationManager = (NotificationManager) this
-                .getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
         String NOTIFICATION_CHANNEL_ID = "01";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             @SuppressLint("WrongConstant") NotificationChannel notificationChannel
                     = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "My Notifications", NotificationManager.IMPORTANCE_MAX);
             // Configure the notification channel.
-
-            alarmNotificationManager.createNotificationChannel(notificationChannel);
+            notificationChannel.setDescription("Sample Channel description");
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+            notificationChannel.enableVibration(true);
+            notificationManager.createNotificationChannel(notificationChannel);
         }
+
 
         //get pending intent
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
 
-        //Create notification
-        NotificationCompat.Builder alamNotificationBuilder = new NotificationCompat.Builder(
-                this, NOTIFICATION_CHANNEL_ID);
-        alamNotificationBuilder
+        NotificationCompat.Builder notificationBuilder
+                = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+        notificationBuilder.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.mipmap.ic_launcher_round)
-                .setContentTitle("Alarm")
-                .setContentText(msg).setAutoCancel(true)
-                .setContentInfo("Information")
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(msg));
-        alamNotificationBuilder.setContentIntent(contentIntent);
-
-        //notiy notification manager about new notification
-        alarmNotificationManager.notify(1, alamNotificationBuilder.build());
+                .setContentTitle("sample notification")
+                .setContentText("This is sample notification")
+                .setContentInfo("Information");
+        notificationManager.notify(1, notificationBuilder.build());
     }
 
 }
-

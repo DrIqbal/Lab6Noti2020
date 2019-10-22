@@ -22,8 +22,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         context.startService(new Intent(context, AlarmSoundService.class));
 
         //This will send a notification message and show notification in notification tray
-        ComponentName comp = new ComponentName(context.getPackageName(),
-                AlarmNotificationService.class.getName());
+        ComponentName comp = new ComponentName(context.getPackageName(), AlarmNotificationService.class.getName());
         startWakefulService(context, (intent.setComponent(comp)));
     }
 }
